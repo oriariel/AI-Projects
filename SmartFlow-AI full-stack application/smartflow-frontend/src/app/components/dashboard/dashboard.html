@@ -1,0 +1,57 @@
+<div class="container">
+  <header>
+    <h1>SmartFlow-AI</h1>
+    <p>Translate complex business descriptions into structured, automated workflows using Claude Enterprise intelligence.</p>
+  </header>
+
+  <div class="card input-section">
+    <h3>Describe Your Business Process</h3>
+    <textarea [(ngModel)]="userInput" placeholder="e.g., An employee requests a vacation day. The manager reviews it. If approved, HR updates the balance and sends an email confirmation. If rejected, it returns to the employee..." rows="5"></textarea>
+    <button (click)="submitProcess()" [disabled]="loading || !userInput.trim()">
+      {{ loading ? 'Analyzing via Claude...' : 'Generate AI Workflow' }}
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="spinner-box">
+    <p>Processing workflow elements and generating graph blueprints...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="analysisResult" class="results-container">
+    <h2>Process Blueprint: {{ analysisResult.process_name }}</h2>
+    <p class="summary"><strong>Executive Summary:</strong> {{ analysisResult.summary }}</p>
+
+    <div class="grid-layout">
+      <div class="card steps-card">
+        <h3>Sequential Workflow Steps</h3>
+        <div class="step-list">
+          <div *ngFor="let step of analysisResult.steps" class="step-item">
+            <span class="badge">{{ step.actor }}</span>
+            <h4>{{ step.id }}. {{ step.title }}</h4>
+            <p>{{ step.description }}</p>
+            <small *ngIf="step.next_step_ids.length">Routes to step(s): {{ step.next_step_ids.join(', ') }}</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-column">
+        <div class="card bottleneck-card">
+          <h3>Detected Bottlenecks</h3>
+          <ul>
+            <li *ngFor="let bottleneck of analysisResult.potential_bottlenecks">{{ bottleneck }}</li>
+          </ul>
+        </div>
+
+        <div class="card automation-card">
+          <h3>AI Automation Suggestions</h3>
+          <ul>
+            <li *ngFor="let suggestion of analysisResult.ai_automation_suggestions">{{ suggestion }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
